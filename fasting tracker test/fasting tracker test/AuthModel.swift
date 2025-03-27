@@ -13,7 +13,7 @@ class AuthViewModel: ObservableObject {
     @Published var isUserLoggedIn: Bool = false
 
     init() {
-        // Check if a user is already logged in
+        // Checks if the user is logged or not
         isUserLoggedIn = Auth.auth().currentUser != nil
     }
 
