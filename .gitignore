@@ -1,2 +1,8 @@
-fasting tracker test/.DS_Store
+
+# Ignore macOS system files
 .DS_Store
+fasting tracker test/.DS_Store
+
+# Ignore Xcode user interface state files
+xcuserdata/
+*.xcuserstate
