@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E127D82F2D4FEF1500903B79"
-               BuildableName = "fasting tracker test.app"
-               BlueprintName = "fasting tracker test"
-               ReferencedContainer = "container:fasting tracker test.xcodeproj">
+               BuildableName = "FastHabbit.app"
+               BlueprintName = "FastHabbit"
+               ReferencedContainer = "container:FastHabbit.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -36,9 +36,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E127D83F2D4FEF1800903B79"
-               BuildableName = "fasting tracker testTests.xctest"
-               BlueprintName = "fasting tracker testTests"
-               ReferencedContainer = "container:fasting tracker test.xcodeproj">
+               BuildableName = "FastHabbitTests.xctest"
+               BlueprintName = "FastHabbitTests"
+               ReferencedContainer = "container:FastHabbit.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -47,9 +47,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E127D8492D4FEF1800903B79"
-               BuildableName = "fasting tracker testUITests.xctest"
-               BlueprintName = "fasting tracker testUITests"
-               ReferencedContainer = "container:fasting tracker test.xcodeproj">
+               BuildableName = "FastHabbitUITests.xctest"
+               BlueprintName = "FastHabbitUITests"
+               ReferencedContainer = "container:FastHabbit.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -69,9 +69,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E127D82F2D4FEF1500903B79"
-            BuildableName = "fasting tracker test.app"
-            BlueprintName = "fasting tracker test"
-            ReferencedContainer = "container:fasting tracker test.xcodeproj">
+            BuildableName = "FastHabbit.app"
+            BlueprintName = "FastHabbit"
+            ReferencedContainer = "container:FastHabbit.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -86,9 +86,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E127D82F2D4FEF1500903B79"
-            BuildableName = "fasting tracker test.app"
-            BlueprintName = "fasting tracker test"
-            ReferencedContainer = "container:fasting tracker test.xcodeproj">
+            BuildableName = "FastHabbit.app"
+            BlueprintName = "FastHabbit"
+            ReferencedContainer = "container:FastHabbit.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

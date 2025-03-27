@@ -31,9 +31,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		E127D8302D4FEF1500903B79 /* fasting tracker test.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fasting tracker test.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E127D8402D4FEF1800903B79 /* fasting tracker testTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "fasting tracker testTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		E127D84A2D4FEF1800903B79 /* fasting tracker testUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "fasting tracker testUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E127D8302D4FEF1500903B79 /* FastHabbit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FastHabbit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E127D8402D4FEF1800903B79 /* FastHabbitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FastHabbitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E127D84A2D4FEF1800903B79 /* FastHabbitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FastHabbitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -96,9 +96,9 @@
 		E127D8312D4FEF1500903B79 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E127D8302D4FEF1500903B79 /* fasting tracker test.app */,
-				E127D8402D4FEF1800903B79 /* fasting tracker testTests.xctest */,
-				E127D84A2D4FEF1800903B79 /* fasting tracker testUITests.xctest */,
+				E127D8302D4FEF1500903B79 /* FastHabbit.app */,
+				E127D8402D4FEF1800903B79 /* FastHabbitTests.xctest */,
+				E127D84A2D4FEF1800903B79 /* FastHabbitUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -106,9 +106,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E127D82F2D4FEF1500903B79 /* fasting tracker test */ = {
+		E127D82F2D4FEF1500903B79 /* FastHabbit */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E127D8542D4FEF1800903B79 /* Build configuration list for PBXNativeTarget "fasting tracker test" */;
+			buildConfigurationList = E127D8542D4FEF1800903B79 /* Build configuration list for PBXNativeTarget "FastHabbit" */;
 			buildPhases = (
 				E127D82C2D4FEF1500903B79 /* Sources */,
 				E127D82D2D4FEF1500903B79 /* Frameworks */,
@@ -121,7 +121,7 @@
 			fileSystemSynchronizedGroups = (
 				E127D8322D4FEF1500903B79 /* fasting tracker test */,
 			);
-			name = "fasting tracker test";
+			name = FastHabbit;
 			packageProductDependencies = (
 				E1D17CF92D5BA7980098FD40 /* FirebaseAnalyticsWithoutAdIdSupport */,
 				E1D17CFB2D5BA7980098FD40 /* FirebaseAuth */,
@@ -129,12 +129,12 @@
 				E1D17CFF2D5BA7980098FD40 /* FirebaseStorage */,
 			);
 			productName = "fasting tracker test";
-			productReference = E127D8302D4FEF1500903B79 /* fasting tracker test.app */;
+			productReference = E127D8302D4FEF1500903B79 /* FastHabbit.app */;
 			productType = "com.apple.product-type.application";
 		};
-		E127D83F2D4FEF1800903B79 /* fasting tracker testTests */ = {
+		E127D83F2D4FEF1800903B79 /* FastHabbitTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E127D8572D4FEF1800903B79 /* Build configuration list for PBXNativeTarget "fasting tracker testTests" */;
+			buildConfigurationList = E127D8572D4FEF1800903B79 /* Build configuration list for PBXNativeTarget "FastHabbitTests" */;
 			buildPhases = (
 				E127D83C2D4FEF1800903B79 /* Sources */,
 				E127D83D2D4FEF1800903B79 /* Frameworks */,
@@ -148,16 +148,16 @@
 			fileSystemSynchronizedGroups = (
 				E127D8432D4FEF1800903B79 /* fasting tracker testTests */,
 			);
-			name = "fasting tracker testTests";
+			name = FastHabbitTests;
 			packageProductDependencies = (
 			);
 			productName = "fasting tracker testTests";
-			productReference = E127D8402D4FEF1800903B79 /* fasting tracker testTests.xctest */;
+			productReference = E127D8402D4FEF1800903B79 /* FastHabbitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		E127D8492D4FEF1800903B79 /* fasting tracker testUITests */ = {
+		E127D8492D4FEF1800903B79 /* FastHabbitUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E127D85A2D4FEF1800903B79 /* Build configuration list for PBXNativeTarget "fasting tracker testUITests" */;
+			buildConfigurationList = E127D85A2D4FEF1800903B79 /* Build configuration list for PBXNativeTarget "FastHabbitUITests" */;
 			buildPhases = (
 				E127D8462D4FEF1800903B79 /* Sources */,
 				E127D8472D4FEF1800903B79 /* Frameworks */,
@@ -171,11 +171,11 @@
 			fileSystemSynchronizedGroups = (
 				E127D84D2D4FEF1800903B79 /* fasting tracker testUITests */,
 			);
-			name = "fasting tracker testUITests";
+			name = FastHabbitUITests;
 			packageProductDependencies = (
 			);
 			productName = "fasting tracker testUITests";
-			productReference = E127D84A2D4FEF1800903B79 /* fasting tracker testUITests.xctest */;
+			productReference = E127D84A2D4FEF1800903B79 /* FastHabbitUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -201,7 +201,7 @@
 					};
 				};
 			};
-			buildConfigurationList = E127D82B2D4FEF1500903B79 /* Build configuration list for PBXProject "fasting tracker test" */;
+			buildConfigurationList = E127D82B2D4FEF1500903B79 /* Build configuration list for PBXProject "FastHabbit" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -218,9 +218,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E127D82F2D4FEF1500903B79 /* fasting tracker test */,
-				E127D83F2D4FEF1800903B79 /* fasting tracker testTests */,
-				E127D8492D4FEF1800903B79 /* fasting tracker testUITests */,
+				E127D82F2D4FEF1500903B79 /* FastHabbit */,
+				E127D83F2D4FEF1800903B79 /* FastHabbitTests */,
+				E127D8492D4FEF1800903B79 /* FastHabbitUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -276,12 +276,12 @@
 /* Begin PBXTargetDependency section */
 		E127D8422D4FEF1800903B79 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E127D82F2D4FEF1500903B79 /* fasting tracker test */;
+			target = E127D82F2D4FEF1500903B79 /* FastHabbit */;
 			targetProxy = E127D8412D4FEF1800903B79 /* PBXContainerItemProxy */;
 		};
 		E127D84C2D4FEF1800903B79 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E127D82F2D4FEF1500903B79 /* fasting tracker test */;
+			target = E127D82F2D4FEF1500903B79 /* FastHabbit */;
 			targetProxy = E127D84B2D4FEF1800903B79 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -483,7 +483,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/fasting tracker test.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/fasting tracker test";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FastHabbit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FastHabbit";
 			};
 			name = Debug;
 		};
@@ -502,7 +502,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/fasting tracker test.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/fasting tracker test";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FastHabbit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FastHabbit";
 			};
 			name = Release;
 		};
@@ -543,7 +543,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E127D82B2D4FEF1500903B79 /* Build configuration list for PBXProject "fasting tracker test" */ = {
+		E127D82B2D4FEF1500903B79 /* Build configuration list for PBXProject "FastHabbit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E127D8522D4FEF1800903B79 /* Debug */,
@@ -552,7 +552,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E127D8542D4FEF1800903B79 /* Build configuration list for PBXNativeTarget "fasting tracker test" */ = {
+		E127D8542D4FEF1800903B79 /* Build configuration list for PBXNativeTarget "FastHabbit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E127D8552D4FEF1800903B79 /* Debug */,
@@ -561,7 +561,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E127D8572D4FEF1800903B79 /* Build configuration list for PBXNativeTarget "fasting tracker testTests" */ = {
+		E127D8572D4FEF1800903B79 /* Build configuration list for PBXNativeTarget "FastHabbitTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E127D8582D4FEF1800903B79 /* Debug */,
@@ -570,7 +570,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E127D85A2D4FEF1800903B79 /* Build configuration list for PBXNativeTarget "fasting tracker testUITests" */ = {
+		E127D85A2D4FEF1800903B79 /* Build configuration list for PBXNativeTarget "FastHabbitUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E127D85B2D4FEF1800903B79 /* Debug */,

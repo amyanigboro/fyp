@@ -1,78 +1,126 @@
+//
+//  FastingTimerView.swift
+//  FastHabbit
+//
+//  Created by Amy  on 14/03/2025.
+//
+
+
 import SwiftUI
 
 struct FastingTimerView: View {
-    // MARK: - State
-    @State private var selectedHours = 16
-    @State private var selectedFlower = "red" // or an enum if you prefer
+    @State private var selectedHours: fastlength = .sixteen
+    @State private var selectedFlower = "Red"
     @State private var startTime: Date?
     @State private var endTime: Date?
+    @State private var currentTime = Date.now
     @State private var isActive = false
 
-    // This timer publishes an event every second
+    // refresh view every second
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
-        VStack(spacing: 20) {
-            // 1) Timer display
-            Text(displayedTime)
-                .font(.largeTitle)
-                .bold()
-
-            // 2) Flower image (show stage 0..4)
-            Image(flowerStageImageName)
+        ZStack {
+            Image("Gardenbg")
                 .resizable()
-                .scaledToFit()
-                .frame(width: 100, height: 100)
-
-            // 3) Buttons to pick fast length & flower
-            HStack {
-                // Example: pick a few preset hours
-                Picker("Hours", selection: $selectedHours) {
-                    Text("13").tag(13)
-                    Text("16").tag(16)
-                    Text("18").tag(18)
-                    Text("Custom").tag(0) // handle custom in your code
+//                .scaledToFit()
+                .frame(width: 430, height: 700)
+                .padding(.bottom, 50)
+            
+            VStack(spacing: 20) {
+                // timer display
+                Text(displayedTime)
+                    .onReceive(timer) { _ in //update every second
+                        currentTime = Date.now
+                    }
+                    .font(.largeTitle)
+                    .bold()
+                    .foregroundColor(.white)
+                    .offset(y: 50)
+                    .padding(.bottom, 100)
+                
+                // flower image
+                if (!isActive) {
+                    Image("dirt")
+                        .resizable()
+                        .scaledToFit()
+                        .offset(y:90)
+                        .frame(width: 200, height: 200)
+                } else {
+                    Image(flowerStageImageName)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 200, height: 200)
                 }
-                .pickerStyle(SegmentedPickerStyle())
-
-                // Flower choice
-                Picker("Flower", selection: $selectedFlower) {
-                    Text("Red").tag("red")
-                    Text("Pink").tag("pink")
-                    Text("Purple").tag("purple")
-                    Text("Blue").tag("blue")
+                // buttons to pick fast length & flower
+                VStack {
+                    // preset hours
+                    Picker("Hours", selection: $selectedHours) {
+                        Text("13").tag(fastlength.thirteen)
+                        Text("16").tag(fastlength.sixteen)
+                        Text("18").tag(fastlength.eighteen)
+                        Text("Custom").tag(fastlength.custom)
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    
+                    Menu {
+                        Button("Red") {
+                            selectedFlower = "Red"
+                        }
+                        Button("Pink") {
+                            selectedFlower = "Pink"
+                        }
+                        Button("Blue") {
+                            selectedFlower = "Blue"
+                        }
+                        Button("Orange") {
+                            selectedFlower = "Orange"
+                        }
+                        Button("Purple") {
+                            selectedFlower = "Purple"
+                        }
+                    } label: {
+                        Label("Choose Flower", systemImage: "leaf.fill")
+                            .frame(width: 200, height:50)
+                            .background(.accent)
+                            .tint(.darkgreen)
+                            .cornerRadius(10)
+                        
+                    }
+                    
                 }
-                .pickerStyle(SegmentedPickerStyle())
+                .padding()
+                
+                // 4) Start & Reset Buttons
+                VStack(spacing: 20) {
+                    HStack(spacing: 30) {
+                        Button("Start Fast") {
+                            startFast()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        
+                        Button("Stop Timer") {
+                            stopFast()
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                    Button("Reset Timer") {
+                        resetTimer()
+                    }
+                    .buttonStyle(.bordered)
+                    
+                }
+                .tint(.darkgreen)
+                
+                Spacer()
+                
+                // placeholder to see logs or add retrospective fasts
+                //            NavigationLink("View Past Fasts") {
+                //                PastFastsView()
+                //            }
             }
             .padding()
-
-            // 4) Start & Reset Buttons
-            HStack(spacing: 40) {
-                Button("Start Fast") {
-                    startFast()
-                }
-                .buttonStyle(.borderedProminent)
-
-                Button("Reset Timer") {
-                    resetTimer()
-                }
-                .buttonStyle(.bordered)
-            }
-
-            Spacer()
-
-            // 5) A placeholder to navigate to logs or add retrospective fasts
-            NavigationLink("View Past Fasts") {
-                PastFastsView()
-            }
-        }
-        .padding()
-        // 6) Update timer every second
-        .onReceive(timer) { _ in
-            // Force SwiftUI to re-render if the timer is active
-            if isActive {
-                _ = displayedTime // Just reading it triggers a re-render
-            }
+            .padding(.horizontal, 30)
         }
     }
 
@@ -81,8 +129,8 @@ struct FastingTimerView: View {
     /// Shows "HH:MM:SS remaining" if not done, or "+HH:MM:SS overtime" if done
     private var displayedTime: String {
         guard let endTime = endTime else { return "No fast started" }
-        let now = Date()
-        let diff = endTime.timeIntervalSince(now)
+        
+        let diff = currentTime.distance(to: endTime)
 
         let absDiff = abs(diff)
         let hours = Int(absDiff) / 3600
@@ -90,7 +138,7 @@ struct FastingTimerView: View {
         let seconds = Int(absDiff) % 60
 
         // Format as HH:MM:SS
-        let formatted = String(format: "%02dh:%02dm:%02ds", hours, minutes, seconds)
+        let formatted = String(format: "%02d:%02d:%02d", hours, minutes, seconds)
 
         if diff > 0 {
             return "\(formatted) remaining"
@@ -103,34 +151,85 @@ struct FastingTimerView: View {
     private var flowerStageImageName: String {
         guard let startTime = startTime,
               let endTime = endTime else {
-            return "\(selectedFlower)_0" // default to stage 0 if no fast
+            return "\(selectedFlower)1" // default to stage 1 if no fast
         }
 
         let totalDuration = endTime.timeIntervalSince(startTime)
         let currentDuration = Date().timeIntervalSince(startTime)
 
-        // fraction of time completed [0..1], clamp to 1 if we pass endTime
+        // fraction of time completed [0..1], 1 if we pass endTime
         let fraction = max(0, min(1, currentDuration / totalDuration))
 
-        // Each 20% is a new stage: 0..4
-        let stage = Int(fraction * 5.0) // 0,1,2,3,4
-        return "\(selectedFlower)_\(min(stage, 4))"
+        //each 25% is a new stage: 1..4
+        let stage = Int((fraction * 4.0))+1 // 1,2,3,4,5
+        return "\(selectedFlower)\(min(stage, 5))"
     }
 
-    // MARK: - Methods
-
-    /// Starts a new fast using `selectedHours`.
+    // Start the fast timer
     private func startFast() {
-        let now = Date()
-        startTime = now
-        endTime = now.addingTimeInterval(Double(selectedHours) * 3600)
+        startTime = currentTime
+        endTime = startTime!.addingTimeInterval(Double(selectedHours.hours) * 3600)
         isActive = true
     }
 
-    /// Resets the timer, clearing all data
+    // Reset the timer
     private func resetTimer() {
         startTime = nil
         endTime = nil
         isActive = false
     }
+    
+    //Stop the timer and store fast length in the database
+    @State private var isComplete: Bool = false
+    
+    private func calcFastCompletion() -> Bool {
+        guard let endTime = endTime else { return false }
+        let duration = endTime.distance(to: startTime!)
+        if duration>=selectedHours.hours {
+            return true
+        }
+        else {
+            return false
+        }
+    }
+    
+    private func stopFast() {
+        guard isActive else { return }
+        isActive = false
+        isComplete = true
+        
+        let newFast = Fast(startDate: startTime!, endDate: Date.now, isComplete: calcFastCompletion(), flowerEarned: selectedFlower)
+        
+        //store fast
+        UserDefaults.standard.set(try? JSONEncoder().encode(newFast), forKey: "fasts")
+        
+        startTime = nil
+        endTime = nil
+    }
+    
+    enum fastlength {
+        case sixteen
+        case eighteen
+        case thirteen
+        case custom
+        
+        var hours: Double {
+            switch self {
+            case .sixteen:
+                return 16
+            case .eighteen:
+                return 18
+            case .thirteen:
+                return 13
+            case .custom:
+                //Change to return user input somehow
+                return 1/60
+                
+            }
+        }
+    }
+}
+
+#Preview {
+    FastingTimerView()
 }

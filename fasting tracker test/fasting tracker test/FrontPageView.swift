@@ -1,5 +1,5 @@
 //
-//  AuthView.swift
+//  FrontPageView.swift
 //  fasting tracker test
 //
 //  Created by Amy  on 12/02/2025.
@@ -10,8 +10,8 @@ import SwiftUI
 import FirebaseAuth
 import FirebaseCore
 
-struct AuthView: View {
-    @EnvironmentObject var authViewModel: AuthViewModel
+struct FrontPageView: View {
+    @EnvironmentObject var authModel: AuthModel
     @State private var email = ""
     @State private var password = ""
     @State private var confirmPassword = ""
@@ -22,16 +22,16 @@ struct AuthView: View {
     
     var body: some View {
         ZStack {
-            if authViewModel.isUserLoggedIn {
+            if authModel.isUserLoggedIn {
                 HomePageView()
             } else {
                 loginSignupUI
             }
         }
-        .onChange(of: authViewModel.isUserLoggedIn) {
-            // This runs whenever `isUserLoggedIn` changes
-            if !authViewModel.isUserLoggedIn {
-                // The user just logged out → reset your local states
+        .onChange(of: authModel.isUserLoggedIn) {
+            // This runs whenever isUserLoggedIn changes
+            if !authModel.isUserLoggedIn {
+                // The user just logged out -> reset local states
                 isLoginMode = nil
                 email = ""
                 password = ""
@@ -155,19 +155,19 @@ struct AuthView: View {
                         //log in/sign up action button
                         Button(action: {
                             if isLoginMode == true {
-                                authViewModel.loginUser(email: email, password: password) { error in
+                                authModel.loginUser(email: email, password: password) { error in
                                     if let error = error {
                                         errorMessage = error
                                     } else {
-                                        authViewModel.isUserLoggedIn = true
+                                        authModel.isUserLoggedIn = true
                                     }
                                 }
                             } else {
-                                authViewModel.signUpUser(email: email, password: password, confirmPassword: confirmPassword) { error in
+                                authModel.signUpUser(email: email, password: password, confirmPassword: confirmPassword) { error in
                                     if let error = error {
                                         errorMessage = error
                                     } else {
-                                        authViewModel.isUserLoggedIn = true
+                                        authModel.isUserLoggedIn = true
                                     }
                                 }
                             }
@@ -229,45 +229,10 @@ struct AuthView: View {
             
         }
     }
-    
-//    func signUpUser() {
-//        guard password == confirmPassword else {
-//            errorMessage = "Passwords do not match!"
-//            return
-//        }
-//        
-//        Auth.auth().createUser(withEmail: email, password: password) { result, error in
-//            if let error = error {
-//                errorMessage = error.localizedDescription
-//            } else {
-//                errorMessage = "Account created"
-//            }
-//        }
-//    }
-//    
-//    func loginUser() {
-//        Auth.auth().signIn(withEmail: email, password: password) { result, error in
-//            if let error = error {
-//                errorMessage = error.localizedDescription
-//            } else {
-//                errorMessage = "Logged in"
-//            }
-//        }
-//    }
-//    func logoutUser() {
-//        Auth.auth().signOut() { result, error in
-//            if let error = error {
-//                errorMessage = error.localizedDescription
-//            }
-//            else {
-//                errorMessage = "Signed out successfully"
-//            }
-//        }
-//    }
 }
     
     
-#Preview {
-    AuthView().environmentObject(AuthViewModel())
-}
+//#Preview {
+//    AuthView().environmentObject(AuthModel())
+//}
 

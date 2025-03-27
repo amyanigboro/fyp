@@ -21,7 +21,7 @@ import FirebaseCore
 @main
 struct fasting_tracker_testApp: App {
     
-    @StateObject var authViewModel = AuthViewModel()
+    @StateObject var authModel = AuthModel()
 
     init() {
         FirebaseApp.configure()
@@ -29,7 +29,7 @@ struct fasting_tracker_testApp: App {
 
     var body: some Scene {
         WindowGroup {
-            AuthView().environmentObject(authViewModel)
+            FrontPageView().environmentObject(authModel)
         }
     }
 }

@@ -1,3 +1,11 @@
+//
+//  PastFastsView.swift
+//  FastHabbit
+//
+//  Created by Amy  on 14/03/2025.
+//
+
+
 import SwiftUI
 
 struct PastFastsView: View {
