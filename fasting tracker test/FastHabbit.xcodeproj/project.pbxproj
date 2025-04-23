@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E1295AF02DB31A19007AC62A /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = E1295AEF2DB31A19007AC62A /* SwiftUIIntrospect */; };
 		E1D17CFA2D5BA7980098FD40 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = E1D17CF92D5BA7980098FD40 /* FirebaseAnalyticsWithoutAdIdSupport */; };
 		E1D17CFC2D5BA7980098FD40 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = E1D17CFB2D5BA7980098FD40 /* FirebaseAuth */; };
 		E1D17CFE2D5BA7980098FD40 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = E1D17CFD2D5BA7980098FD40 /* FirebaseFirestore */; };
@@ -62,6 +63,7 @@
 				E1D17CFA2D5BA7980098FD40 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
 				E1D17D002D5BA7980098FD40 /* FirebaseStorage in Frameworks */,
 				E1D17CFC2D5BA7980098FD40 /* FirebaseAuth in Frameworks */,
+				E1295AF02DB31A19007AC62A /* SwiftUIIntrospect in Frameworks */,
 				E1D17CFE2D5BA7980098FD40 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -127,6 +129,7 @@
 				E1D17CFB2D5BA7980098FD40 /* FirebaseAuth */,
 				E1D17CFD2D5BA7980098FD40 /* FirebaseFirestore */,
 				E1D17CFF2D5BA7980098FD40 /* FirebaseStorage */,
+				E1295AEF2DB31A19007AC62A /* SwiftUIIntrospect */,
 			);
 			productName = "fasting tracker test";
 			productReference = E127D8302D4FEF1500903B79 /* FastHabbit.app */;
@@ -212,6 +215,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				E1D17CF82D5BA7980098FD40 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				E1295AEE2DB31A19007AC62A /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E127D8312D4FEF1500903B79 /* Products */;
@@ -582,6 +586,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		E1295AEE2DB31A19007AC62A /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/swiftui-introspect";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
 		E1D17CF82D5BA7980098FD40 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -593,6 +605,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E1295AEF2DB31A19007AC62A /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E1295AEE2DB31A19007AC62A /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
+			productName = SwiftUIIntrospect;
+		};
 		E1D17CF92D5BA7980098FD40 /* FirebaseAnalyticsWithoutAdIdSupport */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E1D17CF82D5BA7980098FD40 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

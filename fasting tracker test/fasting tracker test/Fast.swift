@@ -7,30 +7,32 @@
 
 import SwiftUI
 
-//create a class that stores details about a recorded fast
-class Fast: Encodable {
+//stores details about a recorded fast
+struct Fast: Codable, Identifiable {
     var id: String
     var startDate: Date
     var endDate: Date
     var isComplete: Bool
     var flowerEarned: String
     var duration: Double
+    var sethours: Double
     
-    init(startDate: Date, endDate: Date, isComplete: Bool, flowerEarned: String) {
-        self.id = UUID().uuidString
+    init(id: String, startDate: Date, endDate: Date, isComplete: Bool, flowerEarned: String, duration: Double, sethours: Double) {
+        self.id = id
         self.startDate = startDate
         self.endDate = endDate
         self.isComplete = isComplete
         self.flowerEarned = flowerEarned
         self.duration = startDate.distance(to: endDate)
+        self.sethours = sethours
     }
     
-    func adjustStartDate(_ newStartDate: Date) {
+    mutating func adjustStartDate(_ newStartDate: Date) {
         self.startDate = newStartDate
         self.duration = startDate.distance(to: endDate)
     }
     
-    func adjustEndDate(_ newEndDate: Date) {
+    mutating func adjustEndDate(_ newEndDate: Date) {
         self.endDate = newEndDate
         self.duration = startDate.distance(to: endDate)
     }

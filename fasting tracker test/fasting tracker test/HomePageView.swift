@@ -7,6 +7,8 @@
 
 import SwiftUI
 import FirebaseAuth
+import SwiftUI
+import SwiftUIIntrospect
 
 struct HomePageView: View {
     @EnvironmentObject var authModel: AuthModel
@@ -16,7 +18,12 @@ struct HomePageView: View {
         ZStack {
             Image("HomePage")
                 .resizable()
+                .fixedSize(horizontal: false, vertical: false)
                 .ignoresSafeArea()
+                .frame(maxWidth: .infinity)
+                
+//                .scaledToFit()
+                
 
                 
             VStack {
@@ -28,20 +35,49 @@ struct HomePageView: View {
                 //clock timer adjusting mechanisms
                 
                 //navbar
-                Spacer()
-                //logic
+//                NavigationStack{
+//                    NavigationLink("View Past Fasts", destination: PastFasts())
+//                    .padding(.top)
+//                }
+//                .introspect(.navigationStack, on: .iOS(.v16, .v17, .v18)) {
+//                    $0.viewControllers.forEach { controller in
+//                        controller.view.backgroundColor = .clear
+//                    }
+//                }
+//                Spacer()
+                
+                //maincontent
                 if selectedTab == "home" {
-                    Button(action: {}) {
-                        Image(systemName: "star.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 200, height: 200)
-                            .tint(.darkgreen)
+                    NavigationStack{
+                        NavigationLink(destination:
+                            PastFasts()
+                            .introspect(.viewController, on: .iOS(.v16, .v17, .v18)) { vc in
+                                vc.view.backgroundColor = .clear
+                            }
+                        ) {
+                            Image(systemName: "star.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 200, height: 200)
+                                .tint(.darkgreen)
+                                .padding(.top)
+                        }
+//                        .buttonStyle(.plain)
                     }
+                    .introspect(.navigationStack , on: .iOS(.v16, .v17, .v18)) {
+                        $0.viewControllers.forEach { controller in
+                            controller.view.backgroundColor = .clear
+                        }
+                    }
+//                    NavigationStack{
+//                        NavigationLink("View Past Fasts", destination: PastFasts())
+//                    }
                     Spacer()
-                } else if selectedTab == "timer" {
+                }
+                else if selectedTab == "timer" {
                     FastingTimerView()
-                } else if selectedTab == "profile" {
+                }
+                else if selectedTab == "profile" {
                     Button(action: {
                         authModel.logoutUser()
                     }) {
@@ -54,19 +90,15 @@ struct HomePageView: View {
                             .foregroundColor(Color.white)
                             .cornerRadius(30)
                     }
-                    Spacer()
+//                    Spacer()
                 }
                 
+            }
+            
+           
+            NavigationStack(){
                 HStack(alignment: .bottom, spacing: 85) {
-                    Button(action: {
-                        selectedTab="home"
-                    }) {
-                        Image(systemName: "house.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 50, height: 50)
-                            .foregroundColor(selectedTab == "home" ? .blue : .gray)
-                    }
+                    
                     Button(action: {
                         selectedTab="timer"
                     }) {
@@ -76,6 +108,17 @@ struct HomePageView: View {
                             .frame(width: 50, height: 50)
                             .foregroundColor(selectedTab == "timer" ? .blue : .gray)
                     }
+                    
+                    Button(action: {
+                        selectedTab="home"
+                    }) {
+                        Image(systemName: "leaf.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 50, height: 50)
+                            .foregroundColor(selectedTab == "home" ? .blue : .gray)
+                    }
+                    
                     Button(action: {
                         selectedTab="profile"
                     }) {
@@ -85,6 +128,13 @@ struct HomePageView: View {
                             .frame(width: 50, height: 50)
                             .foregroundColor(selectedTab == "profile" ? .blue : .gray)
                     }
+                }
+            }
+            .frame(width: 350, height: 200, alignment: .bottom)
+            .offset(x: -2, y:380)
+            .introspect(.navigationStack, on: .iOS(.v16, .v17, .v18)) {
+                $0.viewControllers.forEach { controller in
+                    controller.view.backgroundColor = .clear
                 }
             }
         }

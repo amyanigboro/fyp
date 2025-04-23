@@ -15,6 +15,15 @@ struct FastingTimerView: View {
     @State private var endTime: Date?
     @State private var currentTime = Date.now
     @State private var isActive = false
+    
+    //for the custom input
+//    @State private var customHoursInput = ""       // “16.5” etc.
+//    @State private var customHoursValue: Double = 16
+//    @State private var showingCustomInput = false
+    
+    @State private var customHoursInput = ""      // raw text
+    @State private var customHours: Double = 0    // parsed value
+    @State private var showCustomPrompt = false
 
     // refresh view every second
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -24,7 +33,7 @@ struct FastingTimerView: View {
             Image("Gardenbg")
                 .resizable()
 //                .scaledToFit()
-                .frame(width: 430, height: 700)
+                .frame(width: 400, height: 700)
                 .padding(.bottom, 50)
             
             VStack(spacing: 20) {
@@ -59,9 +68,14 @@ struct FastingTimerView: View {
                         Text("13").tag(fastlength.thirteen)
                         Text("16").tag(fastlength.sixteen)
                         Text("18").tag(fastlength.eighteen)
-                        Text("Custom").tag(fastlength.custom)
+                        Text("Custom (\(Int(customHours)))").tag(fastlength.custom)
                     }
-                    .pickerStyle(SegmentedPickerStyle())
+                    .pickerStyle(MenuPickerStyle())
+                    .onChange(of: selectedHours) {
+                        if selectedHours == .custom {
+                            showCustomPrompt = true
+                        }
+                      }
                     
                     Menu {
                         Button("Red") {
@@ -91,6 +105,46 @@ struct FastingTimerView: View {
                 }
                 .padding()
                 
+//                .sheet(isPresented: $showingCustomInput) {
+//                      VStack(spacing: 20) {
+//                        Text("Enter custom hours")
+//                          .font(.headline)
+//
+//                        TextField("Hours", text: $customHoursInput)
+//                          .keyboardType(.decimalPad)
+//                          .textFieldStyle(.roundedBorder)
+//                          .padding()
+//
+//                        HStack {
+//                          Button("Cancel") {
+//                            // fall back to 16h if they cancel
+//                            selectedHours = .sixteen
+//                            showingCustomInput = false
+//                          }
+//                          Spacer()
+//                          Button("OK") {
+//                            if let v = Double(customHoursInput), v > 0 {
+//                              customHoursValue = v
+//                            }
+//                            showingCustomInput = false
+//                          }
+//                        }
+//                        .padding(.horizontal)
+//                      }
+//                      .padding()
+//                    }
+                // MARK: — the pop‑up to enter custom hours
+                .alert("Custom hours", isPresented: $showCustomPrompt) {
+                  TextField("Hours", text: $customHoursInput)
+                    .keyboardType(.decimalPad)
+                  Button("OK") {
+                    // parse it, default to 0 if invalid
+                    customHours = Double(customHoursInput) ?? 0
+                  }
+                } message: {
+                  Text("Enter the number of hours you want to fast:")
+                }
+                
                 // 4) Start & Reset Buttons
                 VStack(spacing: 20) {
                     HStack(spacing: 30) {
@@ -114,19 +168,13 @@ struct FastingTimerView: View {
                 
                 Spacer()
                 
-                // placeholder to see logs or add retrospective fasts
-                //            NavigationLink("View Past Fasts") {
-                //                PastFastsView()
-                //            }
             }
-            .padding()
-            .padding(.horizontal, 30)
+//            .padding()
+//            .padding(.horizontal, 30)
         }
     }
 
-    // MARK: - Computed Properties
-
-    /// Shows "HH:MM:SS remaining" if not done, or "+HH:MM:SS overtime" if done
+    // remaining if not done, overtime if done
     private var displayedTime: String {
         guard let endTime = endTime else { return "No fast started" }
         
@@ -137,7 +185,7 @@ struct FastingTimerView: View {
         let minutes = Int(absDiff) / 60 % 60
         let seconds = Int(absDiff) % 60
 
-        // Format as HH:MM:SS
+        //format time diff as HH:MM:SS
         let formatted = String(format: "%02d:%02d:%02d", hours, minutes, seconds)
 
         if diff > 0 {
@@ -147,7 +195,7 @@ struct FastingTimerView: View {
         }
     }
 
-    /// Determines which stage (0..4) of the flower is shown based on fast progress
+    //shows stage 1 to 5 of the flower based on fast progress
     private var flowerStageImageName: String {
         guard let startTime = startTime,
               let endTime = endTime else {
@@ -157,35 +205,40 @@ struct FastingTimerView: View {
         let totalDuration = endTime.timeIntervalSince(startTime)
         let currentDuration = Date().timeIntervalSince(startTime)
 
-        // fraction of time completed [0..1], 1 if we pass endTime
+        // fraction of time completed, capped at 1 if we pass endTime
         let fraction = max(0, min(1, currentDuration / totalDuration))
 
         //each 25% is a new stage: 1..4
-        let stage = Int((fraction * 4.0))+1 // 1,2,3,4,5
+        let stage = Int((fraction * 4.0))+1
         return "\(selectedFlower)\(min(stage, 5))"
     }
 
-    // Start the fast timer
+    //starts the fast timer
     private func startFast() {
         startTime = currentTime
-        endTime = startTime!.addingTimeInterval(Double(selectedHours.hours) * 3600)
+        endTime = startTime!.addingTimeInterval(Double(hoursToFast) * 3600)
         isActive = true
     }
 
-    // Reset the timer
+    //resets the timer
     private func resetTimer() {
         startTime = nil
         endTime = nil
         isActive = false
     }
     
-    //Stop the timer and store fast length in the database
+    //stops the timer and store fast length in the database
     @State private var isComplete: Bool = false
+    
+    //calculates the current duration of the fast
+    private func currentFastDuration() -> Double {
+        return Double(currentTime.distance(to: startTime!))
+    }
     
     private func calcFastCompletion() -> Bool {
         guard let endTime = endTime else { return false }
         let duration = endTime.distance(to: startTime!)
-        if duration>=selectedHours.hours {
+        if duration>=hoursToFast {
             return true
         }
         else {
@@ -196,39 +249,47 @@ struct FastingTimerView: View {
     private func stopFast() {
         guard isActive else { return }
         isActive = false
-        isComplete = true
         
-        let newFast = Fast(startDate: startTime!, endDate: Date.now, isComplete: calcFastCompletion(), flowerEarned: selectedFlower)
+        let newFast = Fast(
+            id: UUID().uuidString,
+            startDate: startTime!,
+            endDate: Date.now,
+            isComplete: calcFastCompletion(),
+            flowerEarned: selectedFlower,
+            duration: currentFastDuration(),
+            sethours: hoursToFast
+        )
         
-        //store fast
-        UserDefaults.standard.set(try? JSONEncoder().encode(newFast), forKey: "fasts")
+        //store fast in Firestore
+        FirestoreService.shared.save(newFast) { err in
+            if let err = err {
+                print("Firestore save failed:", err)
+            } else {
+                print("Firestore save successful")
+            }
+        }
         
         startTime = nil
         endTime = nil
     }
     
-    enum fastlength {
-        case sixteen
-        case eighteen
-        case thirteen
-        case custom
-        
-        var hours: Double {
-            switch self {
-            case .sixteen:
-                return 16
-            case .eighteen:
-                return 18
-            case .thirteen:
-                return 13
-            case .custom:
-                //Change to return user input somehow
-                return 1/60
-                
-            }
-        }
+    private var hoursToFast: Double {
+      switch selectedHours {
+      case .thirteen:  return 13
+      case .sixteen:   return 16
+      case .eighteen:  return 18
+      case .custom:    return customHours
+      }
     }
+
+    
 }
+
+enum fastlength {
+    case sixteen, eighteen, thirteen, custom
+}
+
+
 
 #Preview {
     FastingTimerView()
