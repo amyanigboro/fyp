@@ -11,7 +11,7 @@ struct NewGoalView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var type: GoalType = .countByFlower
     @State private var targetCount = 1
-    @State private var filterValue = ""
+    @State private var filterValue = "None"
     @State private var startDate = Date()
     @State private var endDate = Date()
 
@@ -20,6 +20,9 @@ struct NewGoalView: View {
     var body: some View {
         NavigationStack {
             VStack {
+                Text("New Goal")
+                    .font(.custom("Jua", size: 30))
+                    .foregroundColor(.white)
                 VStack{
                     Text("How do you want to measure this goal?")
                         .multilineTextAlignment(.center)
@@ -28,16 +31,18 @@ struct NewGoalView: View {
                             Text(t.rawValue).tag(t)
                         }
                     }
-                    .background(Color.green)
-                    .cornerRadius(5)
+                    .background(Color.darkgreen.brightness(0.2))
+                    .cornerRadius(10)
                     .pickerStyle(.segmented)
                 }
+                .foregroundColor(.white)
                 .padding(20)
                 .background(Color.accentColor)
                 .cornerRadius(20)
 
                 VStack {
                     Stepper("Target number of fasts: \(targetCount)", value: $targetCount, in: 1...100)
+                        .foregroundColor(.white)
                   
                     switch type {
                         case .countByFlower:
@@ -60,23 +65,14 @@ struct NewGoalView: View {
                             } label: {
                                 Label("Choose Flower: \(filterValue)", systemImage: "leaf.fill")
                                     .frame(height:50)
+                                    .padding(10)
                                     .background(.accent)
                                     .tint(.darkgreen)
-                                    .padding(10)
                                     .cornerRadius(10)
                                 
                             }
-//                            Picker("Flower Type", selection: $filterValue) {
-//                                Text("Red").tag("Red")
-//                                Text("Blue").tag("Blue")
-//                                Text("Pink").tag("Pink")
-//                                Text("Orange").tag("Orange")
-//                                Text("Purple").tag("Purple")
-//                            }
-//                            TextField("Flower (e.g. Red)", text: $filterValue)
+                        .onAppear { resetFilter() }
                         case .countByDuration:
-//                            TextField("Min hours (e.g. 18)", text: $filterValue)
-//                                .keyboardType(.decimalPad)
                             Menu {
                                 Button("13") {
                                     filterValue = "13"
@@ -94,23 +90,25 @@ struct NewGoalView: View {
                                     filterValue = "36"
                                 }
                             } label: {
-                                Label("Min Fast Length: \(filterValue)", systemImage: "timer.fill")
+                                Label("Min Fast Length: \(filterValue)", systemImage: "hourglass")
                                     .frame(height:50)
+                                    .padding(10)
                                     .background(.accent)
                                     .tint(.darkgreen)
-                                    .padding(10)
-                                    .cornerRadius(10)
-
+                                    .cornerRadius(20)
                             }
+                            .onAppear { resetFilter() }
                         case .countInPeriod:
-                            DatePicker("End date", selection: $endDate,   displayedComponents: .date)
+                            DatePicker("End date", selection: $endDate,   in: Date()..., displayedComponents: .date)
+                                .foregroundColor(.white)
+                                .onAppear { resetFilter() }
                     }
                 }
                 Spacer()
             }
-            .background(Color.gray)
+            .padding(.horizontal, 20)
+            .background(Color.lightgreen)
             .font(.custom("Jua", size:20))
-            .navigationTitle("New Goal")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
@@ -118,21 +116,26 @@ struct NewGoalView: View {
                             type: type,
                             targetCount: targetCount,
                             filterValue: filterValue,
-                            startDate: startDate,
-                            endDate: type == .countInPeriod ? endDate : nil
+                            startDate: startDate, //startDate will be used by other goal types in the future
+                            endDate: type == .countInPeriod ? endDate : nil,
+                            completedAt: nil
                         )
                         FirestoreService.shared.saveGoal(goal) { _ in
                             onDone()
                             dismiss()
                         }
                     }
-                    .disabled(filterValue.isEmpty && type != .countInPeriod)
+                    .disabled(filterValue=="None" && type != .countInPeriod)
                 }
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
             }
         }
+    }
+    
+    private func resetFilter() {
+        filterValue = "None"
     }
 }
 

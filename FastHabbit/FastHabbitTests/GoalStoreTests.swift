@@ -2,47 +2,113 @@ import XCTest
 @testable import FastHabbit
 
 final class GoalStoreTests: XCTestCase {
-  var now: Date!
+    var store: GoalStore!
 
-  override func setUp() {
-    super.setUp()
-    now = Date()
-  }
+    override func setUp() {
+        super.setUp()
+        store = GoalStore()
+    }
 
-  func makeFast(_ flower: String, hours: Double, complete: Bool) -> Fast {
-    let start = now.addingTimeInterval(-hours*3600)
-    let end   = now
-    return Fast(id: "x", startDate: start, endDate: end,
-                isComplete: complete, flowerEarned: flower,
-                duration: hours*3600, sethours: hours)
-  }
+    // making a fast X hours long
+    //helper
+    func makeFast(hours: Double, flower: String, complete: Bool, start: Date = Date().addingTimeInterval(-16*3600), end: Date = Date()) -> Fast {
+        return Fast(
+          id: UUID().uuidString,
+          startDate: start, //default 16 hours ago
+          endDate: end, //default now
+          isComplete: complete,
+          flowerEarned: flower,
+          duration: end.distance(to:start), //calculated actual fast length
+          sethours: hours //chosen hours
+        )
+    }
 
-  func testCountByFlower() {
-    let f1 = makeFast("Red", hours: 16, complete: true)
-    let f2 = makeFast("Red", hours: 16, complete: false)
-    let f3 = makeFast("Blue", hours: 16, complete: true)
-    let goal = Goal(type: .countByFlower, filterValue: "Red",
-                    targetCount: 1, startDate: now, endDate: nil)
-    let store = GoalStore()
-    XCTAssertEqual(store.calculateProgress(for: goal, in: [f1,f2,f3]), 1)
-  }
-  
-  func testCountByDuration() {
-    let f1 = makeFast("Red", hours: 18, complete: true)
-    let f2 = makeFast("Red", hours: 16, complete: true)
-    let goal = Goal(type: .countByDuration, filterValue: "17",
-                    targetCount: 1, startDate: now, endDate: nil)
-    let store = GoalStore()
-    XCTAssertEqual(store.calculateProgress(for: goal, in: [f1,f2]), 1)
-  }
+    //calculate progress with 1/3 eligible flower fast
+    func testCountByFlower_OneOfN() {
+        let redDone = makeFast(hours: 16, flower: "Red",  complete: true)
+        let redFailed = makeFast(hours: 16, flower: "Red",  complete: false)
+        let blueDone = makeFast(hours: 16, flower: "Blue", complete: true)
 
-  func testCountInPeriod() {
-    let yesterday = now.addingTimeInterval(-24*3600)
-    let f1 = Fast(id: "a", startDate: yesterday, endDate: yesterday.addingTimeInterval(100),
-                  isComplete: true, flowerEarned: "Any", duration: 100, sethours: 0)
-    let goal = Goal(type: .countInPeriod, filterValue: "",
-                    targetCount: 1, startDate: yesterday, endDate: now)
-    let store = GoalStore()
-    XCTAssertEqual(store.calculateProgress(for: goal, in: [f1]), 1)
-  }
+        let goal = Goal(
+          type: .countByFlower,
+          targetCount: 2,
+          filterValue: "Red", //red flower
+          startDate: Date() // always the current date for now
+        )
+
+        XCTAssertEqual(store._test_calculateProgress(for: goal, in: [redDone, redFailed, blueDone]), 1)
+    }
+    
+    //calculate progress with 0/3 eligible flower fast
+    func testCountByFlower_ZeroOfN() {
+        let redDone = makeFast(hours: 16, flower: "Red",  complete: true)
+        let redFailed = makeFast(hours: 16, flower: "Red",  complete: false)
+        let blueDone = makeFast(hours: 16, flower: "Blue", complete: true)
+
+        let goal = Goal(
+          type: .countByFlower,
+          targetCount: 2,
+          filterValue: "Pink", //pink flower
+          startDate: Date()// always the current date for now
+        )
+
+        XCTAssertEqual(store._test_calculateProgress(for: goal, in: [redDone, redFailed, blueDone]), 0)
+    }
+
+    //calculate progress with 1/1 eligible fast length fast
+    func testCountByDuration_OneOfN() {
+        let eighteen = makeFast(hours: 18, flower: "Red", complete: true)
+        let sixteen = makeFast(hours: 16, flower: "Red", complete: true)
+
+        let goal = Goal(
+          type: .countByDuration,
+          targetCount: 1,
+          filterValue: "17", // 17 hours minimum
+          
+          startDate: Date(),
+          endDate: nil
+        )
+
+        XCTAssertEqual(store._test_calculateProgress(for: goal, in: [eighteen, sixteen]), 1)
+    }
+    
+    //calculate progress with 1/1 eligible fast length fast
+    func testCountByDuration_ZeroOfN() {
+        let eighteen = makeFast(hours: 18, flower: "Red", complete: true)
+        let sixteen = makeFast(hours: 16, flower: "Red", complete: true)
+
+        let goal = Goal(
+          type: .countByDuration,
+          targetCount: 1,
+          filterValue: "18.4", // 18.4 hours minimum
+          
+          startDate: Date(),
+          endDate: nil
+        )
+
+        XCTAssertEqual(store._test_calculateProgress(for: goal, in: [eighteen, sixteen]), 0)
+    }
+
+    //calculate progress with 1/1 eligible timerange fast
+    func testCountInPeriod() {
+        let tomorrow = Date(timeIntervalSince1970:24*3600)//jan 2 1970 00:00:00
+        let today = Date(timeIntervalSince1970:0) //jan 1 00:00:00
+
+        let passFast = makeFast(hours: 8,
+                                  flower: "Pink",
+                                  complete: true,
+                                  start: today,
+                                  end: today.addingTimeInterval(8*3600)) //end = jan 1 08:00:00
+
+        let goal = Goal(
+          type: .countInPeriod,
+          targetCount: 1,
+          filterValue: "",
+          
+          startDate: today, //goal dates = inclusive of the fasts starting and ending seconds
+          endDate: tomorrow
+        )
+
+        XCTAssertEqual(store._test_calculateProgress(for: goal, in: [passFast]), 1)
+    }
 }

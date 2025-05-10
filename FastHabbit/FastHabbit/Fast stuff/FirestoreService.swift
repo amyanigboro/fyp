@@ -1,3 +1,21 @@
+//
+//  FirestoreService.swift
+//  FastHabbit
+//
+//  Created by Amy  on 17/04/2025.
+//
+
+import FirebaseFirestore
+import FirebaseAuth
+
+struct NotificationModel: Identifiable { // for notifs obviously
+    let id: String
+    let fromUID: String
+    let message: String
+    let timestamp: Date
+    var read: Bool
+}
+
 final class FirestoreService {
     static let shared = FirestoreService()
     let db = Firestore.firestore()
@@ -31,6 +49,94 @@ final class FirestoreService {
             completion?(err)
         }
     }
+
+    //fetches all fasts for the current user and sorts by startDate descending
+    func fetchAll(completion: @escaping ([Fast]) -> Void) {
+        //checks if user is signed in
+        guard let uid = Auth.auth().currentUser?.uid else {
+            completion([])
+            return
+        }
+        db
+        .collection("users") // users
+        .document(uid) // users/uid
+        .collection("fasts") // users/uid/fasts
+        .order(by: "startDate", descending: true) //most recent first
+        .getDocuments { snapshot, error in
+            guard let docs = snapshot?.documents else {
+                completion([])
+                return
+            }
+            let fasts: [Fast] = docs.compactMap { doc -> Fast? in
+                let data = doc.data()
+                guard
+                    let id = data["id"] as? String,
+                    let ts1 = data["startDate"] as? Timestamp,
+                    let ts2 = data["endDate"] as? Timestamp,
+                    let isC = data["isComplete"] as? Bool,
+                    let flower = data["flowerEarned"] as? String,
+                    let dur = data["duration"] as? Double,
+                    let set = data["sethours"] as? Double
+                else { return nil }
+                
+                //error handling: swap them if the user accidentally enters dates in the wrong order
+                //and it managed to get past the checks somehow
+                let start = min(ts1.dateValue(), ts2.dateValue())
+                let end = max(ts1.dateValue(), ts2.dateValue())
+                
+                var fast = Fast(
+                    id: id,
+                    startDate: start,
+                    endDate: end,
+                    isComplete: isC,
+                    flowerEarned: flower,
+                    duration: dur,
+                    sethours: set
+                )
+                fast.adjustEndDate(end) // recalculate duration
+                fast.adjustStartDate(start)
+                return fast
+            }
+            completion(fasts)
+        }
+    }
+    
+    // listening for updates in the fast collection
+    func observeAll(completion: @escaping ([Fast]) -> Void) -> ListenerRegistration? {
+        guard let uid = Auth.auth().currentUser?.uid else { return nil }
+        
+        return db
+                .collection("users")
+                .document(uid)
+                .collection("fasts")
+                .order(by: "startDate", descending: true)
+                .addSnapshotListener { snapshot, _ in
+                let loaded: [Fast] = snapshot?.documents.compactMap { doc in
+                    let d = doc.data()
+                    guard
+                        let id = d["id"] as? String,
+                        let start = d["startDate"] as? Timestamp,
+                        let end = d["endDate"] as? Timestamp,
+                        let isC = d["isComplete"] as? Bool,
+                        let flower = d["flowerEarned"] as? String,
+                        let dur = d["duration"] as? Double,
+                        let set = d["sethours"] as? Double
+                    else { return nil }
+                    return Fast(
+                        id: id,
+                        startDate: start.dateValue(),
+                        endDate: end.dateValue(),
+                        isComplete: isC,
+                        flowerEarned: flower,
+                        duration: dur,
+                        sethours: set
+                    )
+                } ?? []
+            completion(loaded)
+        }
+    }
+    
+    // MARK: --------------------------------Goals------------------------------------
     
     //saves the goall in /users/{uid}/goals/{goal.id}
     func saveGoal(_ goal: Goal, completion: ((Error?) -> Void)? = nil) {
@@ -63,93 +169,8 @@ final class FirestoreService {
           callback(goals)
         }
     }
-
-    //fetches all fasts for the current user and sorts by startDate descending
-    func fetchAll(completion: @escaping ([Fast]) -> Void) {
-        //checks if user is signed in
-        guard let uid = Auth.auth().currentUser?.uid else {
-            completion([])
-            return
-        }
-        db
-            .collection("users") // users
-            .document(uid) // users/uid
-            .collection("fasts") // users/uid/fasts
-            .order(by: "startDate", descending: true) //most recent first
-            .getDocuments { snapshot, error in
-                guard let docs = snapshot?.documents else {
-                    completion([])
-                    return
-                }
-                let fasts: [Fast] = docs.compactMap { doc -> Fast? in
-                    let data = doc.data()
-                    guard
-                        let id = data["id"] as? String,
-                        let ts1 = data["startDate"] as? Timestamp,
-                        let ts2 = data["endDate"] as? Timestamp,
-                        let isC = data["isComplete"] as? Bool,
-                        let flower = data["flowerEarned"] as? String,
-                        let dur = data["duration"] as? Double,
-                        let set = data["sethours"] as? Double
-                    else { return nil }
-                    
-                    //error handling: swap them if the user accidentally enters dates in the wrong order
-                    let start = min(ts1.dateValue(), ts2.dateValue())
-                    let end = max(ts1.dateValue(), ts2.dateValue())
-                    
-                    var fast = Fast(
-                        id: id,
-                        startDate: start,
-                        endDate: end,
-                        isComplete: isC,
-                        flowerEarned: flower,
-                        duration: dur,
-                        sethours: set
-                    )
-                    fast.adjustEndDate(ts2.dateValue()) // recalculate duration
-                    fast.adjustStartDate(ts1.dateValue())
-                    return fast
-                }
-                completion(fasts)
-            
-            }
-    }
     
-    // listens for updates in the fast collection
-    func observeAll(completion: @escaping ([Fast]) -> Void) -> ListenerRegistration? {
-        guard let uid = Auth.auth().currentUser?.uid else { return nil }
-        
-        return db
-            .collection("users")
-            .document(uid)
-            .collection("fasts")
-            .order(by: "startDate", descending: true)
-            .addSnapshotListener { snapshot, _ in
-                let loaded: [Fast] = snapshot?.documents.compactMap { doc in
-                    let d = doc.data()
-                    guard
-                        let id = d["id"] as? String,
-                        let ts1 = d["startDate"] as? Timestamp,
-                        let ts2 = d["endDate"] as? Timestamp,
-                        let isC = d["isComplete"] as? Bool,
-                        let flower = d["flowerEarned"] as? String,
-                        let dur = d["duration"] as? Double,
-                        let set = d["sethours"] as? Double
-                    else { return nil }
-                    return Fast(
-                        id: id,
-                        startDate: ts1.dateValue(),
-                        endDate: ts2.dateValue(),
-                        isComplete: isC,
-                        flowerEarned: flower,
-                        duration: dur,
-                        sethours: set
-                    )
-                } ?? []
-            completion(loaded)
-        }
-    }
-    // MARK: – User Profile
+    // MARK: –--------------------------User Profile------------------------
 
     func createUserProfile(uid: String, email: String, username: String, completion: ((Error?) -> Void)? = nil) {
         let data: [String:Any] = [
@@ -193,7 +214,7 @@ final class FirestoreService {
     }
 
 
-    // MARK: – Friend requests
+    // MARK: ------------------- Friend requests
 
     func sendFriendRequest(to otherUID: String, completion: ((Error?) -> Void)? = nil) {
         let me = Auth.auth().currentUser!.uid
@@ -237,18 +258,20 @@ final class FirestoreService {
         batch.commit(completion: completion)
     }
     
-    // Remove an existing friend relationship both ways
+    //remove existing friend relationship both ways at the same time
     func removeFriend(_ otherUID: String, completion: ((Error?) -> Void)? = nil) {
         let me = Auth.auth().currentUser!.uid
         let batch = db.batch()
         let meRef   = db.collection("users").document(me)
-        let themRef = db.collection("users").document(otherUID)
+        let themRef = db.collection("users").document(otherUID) //the friend in question
         batch.updateData(["friends": FieldValue.arrayRemove([otherUID])], forDocument: meRef)
         batch.updateData(["friends": FieldValue.arrayRemove([me])],      forDocument: themRef)
         batch.commit(completion: completion)
     }
 
-    // ------- Notifications -------
+    
+    
+    //MARK: ------- Notifs -------
     
     func sendPing(to otherUID: String, message: String,
                 completion: ((Error?) -> Void)? = nil) {
@@ -267,37 +290,28 @@ final class FirestoreService {
     }
 
     func fetchNotifications(completion: @escaping ([NotificationModel]) -> Void) {
-    let uid = Auth.auth().currentUser!.uid
-    db.collection("users")
-      .document(uid)
-      .collection("notifications")
-      .order(by: "timestamp", descending: true)
-      .getDocuments { snap, _ in
-        let notes = snap?.documents.compactMap { doc -> NotificationModel? in
-          let d = doc.data()
-          guard let msg = d["message"] as? String,
-                let ts  = d["timestamp"] as? Timestamp,
-                let from = d["fromUID"] as? String else { return nil }
-          return NotificationModel(id: doc.documentID,
-                                   fromUID: from,
-                                   message: msg,
-                                   timestamp: ts.dateValue(),
-                                   read: (d["read"] as? Bool) ?? false)
-        } ?? []
-        completion(notes)
-      }
+        let uid = Auth.auth().currentUser!.uid
+        db.collection("users")
+          .document(uid)
+          .collection("notifications")
+          .order(by: "timestamp", descending: true) //most recent first
+          .getDocuments { snap, _ in
+              let notes = snap?.documents.compactMap { doc -> NotificationModel? in
+                  let d = doc.data()
+                  guard let msg = d["message"] as? String,
+                        let ts  = d["timestamp"] as? Timestamp,
+                        let from = d["fromUID"] as? String else { return nil } //message needs to actually exist/be valid first
+                  return NotificationModel(id: doc.documentID,
+                                           fromUID: from,
+                                           message: msg,
+                                           timestamp: ts.dateValue(),
+                                           read: (d["read"] as? Bool) ?? false) //unread by default
+              } ?? []
+              completion(notes)
+          }
     }
     
     func readNotification(_ noteId: String, completion: ((Error?) -> Void)? = nil) {
-//        let uid = Auth.auth().currentUser!.uid
-//        let noteRef = db.collection("users")
-//                        .document(uid)
-//                        .collection("notifications")
-//                        .document(noteId)
-//        let data: [String:Any] = [
-//          "read": true
-//        ]
-//        noteRef.setData(data, completion: completion)
         guard let uid = Auth.auth().currentUser?.uid else { return }
         db.collection("users").document(uid).collection("notifications").document(noteId)
           .updateData(["read": true], completion: completion)
